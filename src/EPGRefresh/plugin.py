@@ -1,7 +1,11 @@
 # -*- coding: UTF-8 -*-
 from __future__ import absolute_import
-# for localized messages
-from . import _, NOTIFICATIONDOMAIN
+from traceback import print_exc
+from sys import stdout
+from time import time, localtime, mktime
+
+# pragma mark - Workaround for unset clock
+from enigma import eDVBLocalTimeHandler
 
 # Config
 from Components.config import config, ConfigYesNo, ConfigNumber, ConfigSelection, \
@@ -18,14 +22,25 @@ except ImportError:
 
 from Components.SystemInfo import SystemInfo
 from Components.NimManager import nimmanager
+
+# Plugins
+from Components.PluginComponent import plugins
+from Plugins.Plugin import PluginDescriptor
+
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS, fileExists
+from Tools import Notifications
+
+# for localized messages
+from . import _, NOTIFICATIONDOMAIN
+
+# Plugin
+from .EPGRefresh import epgrefresh
+from .EPGRefreshService import EPGRefreshService
+
 
 # Error-print()
-from traceback import print_exc
-from sys import stdout
 
 # Calculate default begin/end
-from time import time, localtime, mktime
 now = localtime()
 begin = int(mktime((
 	now.tm_year, now.tm_mon, now.tm_mday, 0o7, 30,
@@ -128,23 +143,11 @@ except ImportError:
 
 # Notification-Domain
 # Q: Do we really need this or can we do this better?
-from Tools import Notifications
 try:
 	Notifications.notificationQueue.registerDomain(NOTIFICATIONDOMAIN, _("EPGREFRESH_NOTIFICATION_DOMAIN"), deferred_callable=True)
 except Exception:
 	EPGRefreshNotificationKey = ""
 	# print("[EPGRefresh] Error registering Notification-Domain:", e)
-
-# Plugin
-from .EPGRefresh import epgrefresh
-from .EPGRefreshService import EPGRefreshService
-
-# Plugins
-from Components.PluginComponent import plugins
-from Plugins.Plugin import PluginDescriptor
-
-# pragma mark - Workaround for unset clock
-from enigma import eDVBLocalTimeHandler
 
 
 def timeCallback(isCallback=True):
