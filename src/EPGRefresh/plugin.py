@@ -5,7 +5,7 @@ from . import _, NOTIFICATIONDOMAIN
 
 # Config
 from Components.config import config, ConfigYesNo, ConfigNumber, ConfigSelection, \
-	ConfigSubsection, ConfigClock, ConfigYesNo, ConfigInteger, NoSave
+	ConfigSubsection, ConfigClock, ConfigInteger, NoSave
 from Screens.MessageBox import MessageBox
 from Screens.Standby import TryQuitMainloop
 from Tools.BoundFunction import boundFunction
