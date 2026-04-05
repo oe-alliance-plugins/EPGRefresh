@@ -13,7 +13,13 @@ from ServiceReference import ServiceReference
 from Tools.XMLTools import stringToXML
 
 from urllib.parse import unquote
-import six
+
+
+def ensure_str(s, encoding='utf-8', errors='strict'):
+	if isinstance(s, bytes):
+		return s.decode(encoding, errors)
+	else:
+		return s
 
 
 API_VERSION = "1.4"
@@ -68,7 +74,7 @@ class EPGRefreshAddRemoveServiceResource(resource.Resource):
 				output = 'invalid value for "duration": ' + str(duration)
 			else:
 				for _sref in req.args.get(b'sref'):
-					sref = six.ensure_str(_sref)
+					sref = ensure_str(_sref)
 					sref = unquote(sref)
 					ref = eServiceReference(sref)
 					if not ref.valid():
@@ -155,7 +161,7 @@ class EPGRefreshPreviewServicesResource(resource.Resource):
 			services = OrderedSet()
 			bouquets = OrderedSet()
 			for _sref in req.args.get(b'sref'):
-				sref = six.ensure_str(_sref)
+				sref = ensure_str(_sref)
 				sref = unquote(sref)
 				ref = eServiceReference(sref)
 				if not ref.valid():
@@ -202,8 +208,8 @@ class EPGRefreshChangeSettingsResource(resource.Resource):
 	def render(self, req):
 		statetext = "config changed."
 		for _key, _value in req.args.items():
-			value = six.ensure_str(_value[0])
-			key = six.ensure_str(_key)
+			value = ensure_str(_value[0])
+			key = ensure_str(_key)
 			if key == "enabled":
 				config.plugins.epgrefresh.enabled.value = True if value == "true" else False
 			elif key == "enablemessage":
